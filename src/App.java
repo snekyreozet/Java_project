@@ -30,7 +30,6 @@ class Main {
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
         button.setFocusPainted(false);
-        
         return button;
     }
     
@@ -120,6 +119,13 @@ class Main {
         JButton button1 = Button("Change color", 330, 250, 140, 40);
         JButton button2 = Button("Back", 330, 300, 140, 40);
 
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                chcolor();
+            }
+        });
 
         button2.addActionListener(new ActionListener() {
             @Override
@@ -133,6 +139,66 @@ class Main {
         frame.add(button1);
         frame.add(button2);
         frame.setVisible(true);
+    }
+    private static void chcolor() {
+        JFrame frame = new JFrame("Изменение цвета");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setLayout(null);
+
+        frame.getContentPane().setBackground(LB);
+
+        JLabel Label = new JLabel("Settings", SwingConstants.CENTER);
+        Label.setBounds(0, 100, 800, 100);
+        Label.setFont(new Font("Arial", Font.BOLD, 72));
+        Label.setForeground(new Color(101, 67, 33));
+
+        JButton button1 = Button("default", 330, 250, 140, 40);
+        JButton button2 = Button("green", 330, 300, 140, 40);
+        JButton button3 = Button("menu", 330, 350, 140, 40);
+        JButton button4 = Button("exit", 330, 400, 140, 40);
+
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                LB = new Color(210, 180, 140);
+                frame.getContentPane().setBackground(LB);
+            }
+        });
+
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                LB = new Color(189,236,182);
+                frame.getContentPane().setBackground(LB);
+            }
+        });
+        button3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                menu();
+            }
+        });
+
+        button4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (happinessTimer != null) {
+                    happinessTimer.stop();
+                }
+                System.exit(0);
+            }
+        });
+
+        frame.add(Label);
+        frame.add(button1);
+        frame.add(button2);
+        frame.add(button3);
+        frame.add(button4);
+        frame.setVisible(true);
+
     }
     
     private static void yourpet() {
