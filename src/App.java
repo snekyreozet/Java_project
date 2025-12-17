@@ -308,7 +308,7 @@ class Main {
         Label.setForeground(new Color(101, 67, 33));
 
         JButton button1 = Button("default", 330, 250, 140, 40);
-        JButton button2 = Button("green", 330, 300, 140, 40);
+        JButton button2 = Button("dark", 330, 300, 140, 40);
         JButton button3 = Button("menu", 330, 350, 140, 40);
         JButton button4 = Button("exit", 330, 400, 140, 40);
 
@@ -323,7 +323,7 @@ class Main {
         button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                LB = new Color(189,236,182);
+                LB = new Color(39,27,16);
                 frame.getContentPane().setBackground(LB);
             }
         });
