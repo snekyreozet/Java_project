@@ -95,12 +95,15 @@ public class PetHome {
 
         playButton.addActionListener(e -> {
             if (Main.happiness < 100) {
-                Main.happiness += 15;
-                if (Main.happiness > 100) {
-                    Main.happiness = 100;
+                if (Main.happinessTimer != null && Main.happinessTimer.isRunning()) {
+                    Main.happinessTimer.stop();
                 }
-                happinessLabel.setText("Happiness: " + Main.happiness);
-                statusLabel.setText(Main.getHappinessStatus());
+                if (movementTimer != null && movementTimer.isRunning()) {
+                    movementTimer.stop();
+                }
+                frame.setVisible(false);
+                MiniGame miniGame = new MiniGame(frame, petType);
+                miniGame.startGame();
             }
         });
 
