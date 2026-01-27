@@ -172,24 +172,23 @@ class MiniGame {
     }
     
     private void endGame(boolean success) {
-        gameRunning = false;
-        gameTimer.stop();
-        
-        if (success) {
-            gameFrame.dispose();
-            parentFrame.setVisible(true);
-            if (Main.happiness < 100) {
-                Main.happiness += 10;
-                if (Main.happiness > 100) {
-                    Main.happiness = 100;
-                }
+    gameRunning = false;
+    gameTimer.stop();
+    
+    if (success) {
+        gameFrame.dispose();
+        parentFrame.setVisible(true);
+        if (Main.play < 100) {
+            Main.play += 10;
+            if (Main.play > 100) {
+                Main.play = 100;
             }
-            
-            if (Main.happinessTimer != null) {
-                Main.happinessTimer.start();
-            }
-            
-            PetHome.show(petType);
         }
+        if (Main.playTimer != null) {
+            Main.playTimer.start();
+        }
+        
+        PetHome.show(petType);
     }
+}
 }

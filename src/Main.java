@@ -4,8 +4,13 @@ import java.awt.*;
 class Main {
     public static Color LB = new Color(210, 180, 140);
     public static String petname = "";
-    public static int happiness = 70;
-    public static Timer happinessTimer;
+    public static int hunger = 50;
+    public static int play = 50;
+    public static int sleep = 50;
+    
+    public static Timer hungerTimer;
+    public static Timer playTimer;
+    public static Timer sleepTimer;
     public static int petX = 60; 
     public static boolean movingRight = true;
     
@@ -14,8 +19,14 @@ class Main {
     }
     
     public static void stopAllTimers() {
-        if (happinessTimer != null) {
-            happinessTimer.stop();
+        if (hungerTimer != null && hungerTimer.isRunning()) {
+            hungerTimer.stop();
+        }
+        if (playTimer != null && playTimer.isRunning()) {
+            playTimer.stop();
+        }
+        if (sleepTimer != null && sleepTimer.isRunning()) {
+            sleepTimer.stop();
         }
     }
     
@@ -44,15 +55,4 @@ class Main {
         }
     }
     
-    public static String getHappinessStatus() {
-        if (happiness >= 90) {
-            return "Your pet is happy";
-        } 
-        else if (happiness >= 50) {
-            return "Your pet is ok";
-        } 
-        else {
-            return "Your pet is sad";
-        }
-    }
 }
