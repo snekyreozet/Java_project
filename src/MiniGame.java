@@ -179,7 +179,7 @@ class MiniGame {
         gameFrame.dispose();
         parentFrame.setVisible(true);
         if (Main.play < 100) {
-            Main.play += 10;
+            Main.play += 100;
             if (Main.play > 100) {
                 Main.play = 100;
             }

@@ -4,6 +4,9 @@ import java.awt.event.*;
 
 public class PetHome {
     private static Timer overlayTimer;
+    private static JLabel sleepOverlay;
+    private static boolean isSleeping = false;
+    
     public static void show(String petType) {
         JFrame frame = new JFrame(Main.petname);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,8 +32,9 @@ public class PetHome {
         nameLabel.setBounds(550, 10, 300, 60);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 32));
         nameLabel.setForeground(new Color(0, 0, 0));
-        JLabel statusLabel = new JLabel(getOverallStatus(), SwingConstants.CENTER);
-        statusLabel.setBounds(20, 20, 200, 40);
+
+        JLabel statusLabel = new JLabel(getOverallStatus(), SwingConstants.LEFT);
+        statusLabel.setBounds(20, 20, 350, 40); 
         statusLabel.setFont(new Font("Arial", Font.BOLD, 20));
         statusLabel.setForeground(new Color(0, 0, 0));
 
@@ -74,45 +78,43 @@ public class PetHome {
         Timer movementTimer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (Main.movingRight) {
-                    Main.petX += 2;
-                    if (Main.petX >= 60 + 120) {
-                        Main.movingRight = false;
+                if (!isSleeping) {
+                    if (Main.movingRight) {
+                        Main.petX += 2;
+                        if (Main.petX >= 60 + 120) {
+                            Main.movingRight = false;
+                        }
+                    } 
+                    else {
+                        Main.petX -= 2;
+                        if (Main.petX <= 60) {
+                            Main.movingRight = true;
+                        }
                     }
-                } 
-                else {
-                    Main.petX -= 2;
-                    if (Main.petX <= 60) {
-                        Main.movingRight = true;
-                    }
+                    petButton.setBounds(Main.petX, 80, 400, 400);
+                    petButton.repaint();
                 }
-                petButton.setBounds(Main.petX, 80, 400, 400);
-                petButton.repaint();
             }
         });
         movementTimer.start();
 
+        JButton[] buttons = {feedButton, playButton, sleepButton, menuButton, petButton};
+        
         feedButton.addActionListener(e -> {
-            if (Main.hunger < 100) {
+            if (!isSleeping && Main.hunger < 100) {
                 Main.hunger += 10;
                 if (Main.hunger > 100) Main.hunger = 100;
                 hungerLabel.setText("Голод: " + Main.hunger);
                 statusLabel.setText(getOverallStatus());
-            } else {
+            } else if (Main.hunger >= 100) {
                 showTemporaryMessage(frame, "Ваш питомец не хочет есть");
             }
         });
 
         playButton.addActionListener(e -> {
-            if (Main.play < 100) {
+            if (!isSleeping && Main.play < 100) { 
                 if (Main.hungerTimer != null && Main.hungerTimer.isRunning()) {
                     Main.hungerTimer.stop();
-                }
-                if (Main.sleepTimer != null && Main.sleepTimer.isRunning()) {
-                    Main.sleepTimer.stop();
-                }
-                if (Main.playTimer != null && Main.playTimer.isRunning()) {
-                    Main.playTimer.stop();
                 }
                 if (movementTimer != null && movementTimer.isRunning()) {
                     movementTimer.stop();
@@ -120,39 +122,50 @@ public class PetHome {
                 frame.setVisible(false);
                 MiniGame miniGame = new MiniGame(frame, petType);
                 miniGame.startGame();
-            } else {
+            } else if (Main.play >= 100) {
                 showTemporaryMessage(frame, "Ваш питомец не хочет играть");
             }
         });
 
         sleepButton.addActionListener(e -> {
-            if (Main.sleep < 100) {
-                Main.sleep += 10;
+            if (!isSleeping && Main.sleep < 100) { 
+                Main.sleep += 100;
                 if (Main.sleep > 100) Main.sleep = 100;
                 sleepLabel.setText("Сон: " + Main.sleep);
                 statusLabel.setText(getOverallStatus());
+                
                 showSleepOverlay(frame);
+                disableButtons(buttons);
+                isSleeping = true;
+                
                 if (overlayTimer != null && overlayTimer.isRunning()) {
                     overlayTimer.stop();
                 }
                 overlayTimer = new Timer(10000, ev -> {
                     hideSleepOverlay(frame);
+                    enableButtons(buttons); 
+                    isSleeping = false;
                     overlayTimer.stop();
                 });
                 overlayTimer.setRepeats(false);
                 overlayTimer.start();
-            } else {
+            } else if (Main.sleep >= 100) {
                 showTemporaryMessage(frame, "Ваш питомец не хочет спать");
             }
         });
 
         menuButton.addActionListener(e -> {
-            Main.stopAllTimers();
-            movementTimer.stop();
-            frame.dispose();
-            Menu.show();
+            if (!isSleeping) { 
+                Main.stopAllTimers();
+                movementTimer.stop();
+                if (overlayTimer != null && overlayTimer.isRunning()) {
+                    overlayTimer.stop();
+                }
+                frame.dispose();
+                Menu.show();
+            }
         });
-        Main.hungerTimer = new Timer(5000, new ActionListener() {
+        Main.hungerTimer = new Timer(10000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Main.hunger > 0) {
@@ -165,7 +178,7 @@ public class PetHome {
         });
         Main.hungerTimer.start();
 
-        Main.playTimer = new Timer(6000, new ActionListener() {
+        Main.playTimer = new Timer(10000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Main.play > 0) {
@@ -178,7 +191,7 @@ public class PetHome {
         });
         Main.playTimer.start();
 
-        Main.sleepTimer = new Timer(7000, new ActionListener() {
+        Main.sleepTimer = new Timer(10000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Main.sleep > 0) {
@@ -230,15 +243,12 @@ public class PetHome {
             }
             lowCount++;
         }
-        
         if (lowCount >= 3) {
             return "Питомец очень недоволен";
         }
-        
         if (lowCount == 0) {
-            return "Питомец доволен";
+            return "Доволен";
         }
-        
         if (lowCount == 1) {
             return status.toString();
         }
@@ -267,7 +277,7 @@ public class PetHome {
     }
     private static void showSleepOverlay(JFrame frame) {
         ImageIcon sleepIcon = new ImageIcon("src/sleeppet.png");
-        JLabel sleepOverlay = new JLabel(sleepIcon);
+        sleepOverlay = new JLabel(sleepIcon);
         sleepOverlay.setBounds(0, 0, 800, 600);
         sleepOverlay.setName("sleepOverlay");
         
@@ -276,13 +286,20 @@ public class PetHome {
         frame.getContentPane().repaint();
     }
     private static void hideSleepOverlay(JFrame frame) {
-        Component[] components = frame.getContentPane().getComponents();
-        for (Component comp : components) {
-            if (comp instanceof JLabel && "sleepOverlay".equals(comp.getName())) {
-                frame.getContentPane().remove(comp);
-                frame.getContentPane().repaint();
-                break;
-            }
+        if (sleepOverlay != null) {
+            frame.getContentPane().remove(sleepOverlay);
+            frame.getContentPane().repaint();
+            sleepOverlay = null;
+        }
+    }
+    private static void disableButtons(JButton[] buttons) {
+        for (JButton button : buttons) {
+            button.setEnabled(false);
+        }
+    }
+    private static void enableButtons(JButton[] buttons) {
+        for (JButton button : buttons) {
+            button.setEnabled(true);
         }
     }
 }
