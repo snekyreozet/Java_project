@@ -134,7 +134,7 @@ public class PetHome {
                 sleepLabel.setText("Сон: " + Main.sleep);
                 statusLabel.setText(getOverallStatus());
                 
-                showSleepOverlay(frame);
+                showSleepOverlay(frame, petType);
                 disableButtons(buttons);
                 isSleeping = true;
                 
@@ -191,11 +191,11 @@ public class PetHome {
         });
         Main.playTimer.start();
 
-        Main.sleepTimer = new Timer(10000, new ActionListener() {
+        Main.sleepTimer = new Timer(15000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Main.sleep > 0) {
-                    Main.sleep -= 5;
+                    Main.sleep -= 1;
                     if (Main.sleep < 0) Main.sleep = 0;
                     sleepLabel.setText("Сон: " + Main.sleep);
                     statusLabel.setText(getOverallStatus());
@@ -275,8 +275,21 @@ public class PetHome {
         messageTimer.setRepeats(false);
         messageTimer.start();
     }
-    private static void showSleepOverlay(JFrame frame) {
-        ImageIcon sleepIcon = new ImageIcon("src/sleeppet.png");
+    private static void showSleepOverlay(JFrame frame, String petType) {
+        ImageIcon sleepIcon;
+        switch(petType) {
+            case "cat":
+                sleepIcon = new ImageIcon("src/sleepcat.png");
+                break;
+            case "dog":
+                sleepIcon = new ImageIcon("src/sleepdog.png");
+                break;
+            case "rabbit":
+                sleepIcon = new ImageIcon("src/sleeprabbit.png");
+                break;
+            default:
+                sleepIcon = new ImageIcon("src/sleepcat.png");
+        }
         sleepOverlay = new JLabel(sleepIcon);
         sleepOverlay.setBounds(0, 0, 800, 600);
         sleepOverlay.setName("sleepOverlay");
