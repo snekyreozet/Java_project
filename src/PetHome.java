@@ -8,6 +8,7 @@ public class PetHome {
     private static boolean isSleeping = false;
     
     public static void show(String petType) {
+        Main.petType = petType; 
         JFrame frame = new JFrame(Main.petname);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
@@ -56,6 +57,7 @@ public class PetHome {
         JButton feedButton = Main.Buttons.Button("Покормить", 190, 440, 120, 50);
         JButton playButton = Main.Buttons.Button("Играть", 340, 440, 120, 50);
         JButton sleepButton = Main.Buttons.Button("Спать", 490, 440, 120, 50);
+        JButton saveButton = Main.Buttons.Button("Сохранить", 20, 440, 120, 50); 
         JButton menuButton = Main.Buttons.Button("Меню", 325, 505, 150, 50);
 
         ImageIcon petIcon;
@@ -98,7 +100,7 @@ public class PetHome {
         });
         movementTimer.start();
 
-        JButton[] buttons = {feedButton, playButton, sleepButton, menuButton, petButton};
+        JButton[] buttons = {feedButton, playButton, sleepButton, saveButton, menuButton, petButton};
         
         feedButton.addActionListener(e -> {
             if (!isSleeping && Main.hunger < 100) {
@@ -151,6 +153,12 @@ public class PetHome {
                 overlayTimer.start();
             } else if (Main.sleep >= 100) {
                 showTemporaryMessage(frame, "Ваш питомец не хочет спать");
+            }
+        });
+        
+        saveButton.addActionListener(e -> {
+            if (!isSleeping) {
+                Main.saveCurrentPet();
             }
         });
 
@@ -213,6 +221,7 @@ public class PetHome {
         frame.getContentPane().add(feedButton);
         frame.getContentPane().add(playButton);
         frame.getContentPane().add(sleepButton);
+        frame.getContentPane().add(saveButton);
         frame.getContentPane().add(menuButton);
         frame.getContentPane().add(petButton);
 

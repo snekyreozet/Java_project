@@ -1,91 +1,110 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.util.List;
 
 public class PrevPets {
     public static void show() {
+        Main.loadSavedPets();
+        List<PetSave> savedPets = Main.getSavedPets();
+        
         JFrame frame = new JFrame("Ваши питомцы");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
-        frame.setLayout(null);
+        frame.setLayout(new BorderLayout());
         frame.getContentPane().setBackground(Main.LB);
 
-        JLabel Label = new JLabel("YourPets", SwingConstants.CENTER);
-        Label.setBounds(0, 100, 800, 100);
-        Label.setFont(new Font("Arial", Font.BOLD, 72));
-        Label.setForeground(new Color(101, 67, 33)); 
+        JLabel titleLabel = new JLabel("Ваши питомцы", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 48));
+        titleLabel.setForeground(new Color(101, 67, 33));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        JButton button1 = Main.Buttons.Button("First", 330, 250, 140, 40);
-        JButton button2 = Main.Buttons.Button("Second", 330, 300, 140, 40);
-        JButton button3 = Main.Buttons.Button("Last", 330, 350, 140, 40);
-        JButton button4 = Main.Buttons.Button("Menu", 330, 400, 140, 40);
+        JPanel petsPanel = new JPanel();
+        petsPanel.setLayout(new BoxLayout(petsPanel, BoxLayout.Y_AXIS));
+        petsPanel.setBackground(Main.LB);
+        petsPanel.setBorder(BorderFactory.createEmptyBorder(10, 50, 10, 50));
 
-        button1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                showPetDetail("First Pet");
+        if (savedPets.isEmpty()) {
+            JLabel emptyLabel = new JLabel("Нет сохраненных питомцев", SwingConstants.CENTER);
+            emptyLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+            emptyLabel.setForeground(Color.GRAY);
+            petsPanel.add(emptyLabel);
+        } else {
+            for (int i = 0; i < savedPets.size(); i++) {
+                PetSave pet = savedPets.get(i);
+                JPanel petPanel = createPetPanel(pet, i, frame);
+                petsPanel.add(petPanel);
+                petsPanel.add(Box.createVerticalStrut(10));
             }
-        });
+        }
 
-        button2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                showPetDetail("Second Pet");
-            }
-        });
+        JScrollPane scrollPane = new JScrollPane(petsPanel);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-        button3.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                showPetDetail("Third Pet");
-            }
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.setBackground(Main.LB);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+        
+        JButton backButton = Main.Buttons.Button("Назад в меню", 0, 0, 200, 50);
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            Menu.show();
         });
+        
+        buttonPanel.add(backButton);
 
-        button4.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                Menu.show();
-            }
-        });
-
-        frame.add(Label);
-        frame.add(button1);
-        frame.add(button2);
-        frame.add(button3);
-        frame.add(button4);
+        frame.add(titleLabel, BorderLayout.NORTH);
+        frame.add(scrollPane, BorderLayout.CENTER);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.setVisible(true);
     }
     
-    private static void showPetDetail(String title) {
-        JFrame frame = new JFrame(title);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setLocationRelativeTo(null);
-        frame.setLayout(null);
-        frame.getContentPane().setBackground(Main.LB);
+    private static JPanel createPetPanel(PetSave pet, int index, JFrame parentFrame) {
+        JPanel panel = new JPanel(new BorderLayout(10, 0));
+        panel.setBackground(new Color(240, 230, 210));
+        panel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(101, 67, 33), 2),
+            BorderFactory.createEmptyBorder(10, 15, 10, 15)
+        ));
+        panel.setMaximumSize(new Dimension(700, 80));
 
-        JLabel messageLabel = new JLabel("There is no pet yet", SwingConstants.CENTER);
-        messageLabel.setBounds(0, 100, 800, 100);
-        messageLabel.setFont(new Font("Arial", Font.BOLD, 72));
-        messageLabel.setForeground(new Color(101, 67, 33)); 
+        JPanel infoPanel = new JPanel(new GridLayout(3, 1, 0, 5));
+        infoPanel.setBackground(new Color(240, 230, 210));
+        
+        JLabel nameLabel = new JLabel(pet.name + " (" + getPetTypeName(pet.type) + ")");
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        JLabel statsLabel = new JLabel("Голод: " + pet.hunger + "  Игра: " + pet.play + "  Сон: " + pet.sleep);
+        statsLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        
+        JLabel dateLabel = new JLabel("Сохранен: " + pet.saveDate);
+        dateLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+        dateLabel.setForeground(Color.GRAY);
+        
+        infoPanel.add(nameLabel);
+        infoPanel.add(statsLabel);
+        infoPanel.add(dateLabel);
+        panel.add(infoPanel, BorderLayout.CENTER);
 
-        JButton backButton = Main.Buttons.Button("Back", 330, 400, 140, 40);
-
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                PrevPets.show();
-            }
+        JButton loadButton = Main.Buttons.Button("Загрузить", 0, 0, 100, 40);
+        loadButton.addActionListener(e -> {
+            Main.loadPet(index);
+            parentFrame.dispose();
+            PetHome.show(pet.type);
         });
+        
+        panel.add(loadButton, BorderLayout.EAST);
 
-        frame.add(messageLabel);
-        frame.add(backButton);
-        frame.setVisible(true);
+        return panel;
+    }
+    
+    private static String getPetTypeName(String type) {
+        switch(type) {
+            case "cat": return "Кот";
+            case "dog": return "Собака";
+            case "rabbit": return "Кролик";
+            default: return type;
+        }
     }
 }
