@@ -43,7 +43,7 @@ class MiniGame {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 g.setColor(backgroundColor);
-                g.fillRect(0, 0,800, 600);
+                g.fillRect(0, 0, 800, 600);
                 g.setColor(platformBallColor);
                 g.fillRect(platformX, 600 - 50, platformWidth, platformHeight);
                 if (gameRunning && !gamePaused) {
@@ -69,6 +69,7 @@ class MiniGame {
         };
         gamePanel.setLayout(null);
         gamePanel.setPreferredSize(new Dimension(800, 600));
+        
         scoreLabel = new JLabel("Счет: 0");
         scoreLabel.setBounds(20, 20, 300, 40);
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 36));
@@ -97,7 +98,8 @@ class MiniGame {
                 if (gameRunning && !gamePaused) { 
                     ballY += BALL_SPEED;
                     
-                    if (ballY + ballSize >= 600 - 50 && ballY <= 600 - 50 + platformHeight && ballX + ballSize >= platformX && ballX <= platformX + platformWidth) {
+                    if (ballY + ballSize >= 600 - 50 && ballY <= 600 - 50 + platformHeight && 
+                        ballX + ballSize >= platformX && ballX <= platformX + platformWidth) {
                         score += 10;
                         scoreLabel.setText("Счет: " + score);
                         
@@ -161,6 +163,7 @@ class MiniGame {
         gameFrame.setVisible(true);
         gameTimer.start();
     }
+    
     private void createNewBall() {
         ballX = random.nextInt(800 - ballSize);
         ballY = -50;
@@ -172,23 +175,24 @@ class MiniGame {
     }
     
     private void endGame(boolean success) {
-    gameRunning = false;
-    gameTimer.stop();
-    
-    if (success) {
-        gameFrame.dispose();
-        parentFrame.setVisible(true);
-        if (Main.play < 100) {
-            Main.play += 100;
-            if (Main.play > 100) {
-                Main.play = 100;
-            }
-        }
-        if (Main.playTimer != null) {
-            Main.playTimer.start();
-        }
+        gameRunning = false;
+        gameTimer.stop();
         
-        PetHome.show(petType);
+        if (success) {
+            gameFrame.dispose();
+            parentFrame.setVisible(true);
+            
+            if (Main.currentAnimal != null) {
+                if (Main.currentAnimal.getPlay() < 100) {
+                    Main.currentAnimal.increasePlay(100);
+                }
+                
+                if (Main.currentAnimal.getPlayTimer() != null) {
+                    Main.currentAnimal.getPlayTimer().start();
+                }
+            }
+            
+            PetHome.show(petType);
+        }
     }
-}
 }

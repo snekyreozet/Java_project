@@ -16,8 +16,9 @@ public class Settings {
         Label.setFont(new Font("Arial", Font.BOLD, 72));
         Label.setForeground(new Color(101, 67, 33));
 
-        JButton button1 = Main.Buttons.Button("Change color", 330, 250, 140, 40);
-        JButton button2 = Main.Buttons.Button("Back", 330, 300, 140, 40);
+        JButton button1 = Main.Buttons.Button("Цвет фона", 330, 250, 140, 40);
+        JButton button2 = Main.Buttons.Button("Меню", 330, 300, 140, 40);
+        JButton button3 = Main.Buttons.Button("Выход", 330, 350, 140, 40);
 
         button1.addActionListener(new ActionListener() {
             @Override
@@ -35,9 +36,20 @@ public class Settings {
             }
         });
 
+        button3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (Main.currentAnimal != null) {
+                    Main.currentAnimal.stopAllTimers();
+                }
+                System.exit(0);
+            }
+        });
+
         frame.add(Label);
         frame.add(button1);
         frame.add(button2);
+        frame.add(button3);
         frame.setVisible(true);
     }
 }

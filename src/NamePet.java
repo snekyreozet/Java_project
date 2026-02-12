@@ -38,23 +38,15 @@ public class NamePet {
         nameField.setFont(new Font("Arial", Font.PLAIN, 16));
         nameField.setHorizontalAlignment(JTextField.CENTER);
         
-
         JButton nextButton = Main.Buttons.Button("Next", 350, 520, 100, 30);
 
         nextButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Main.petname = nameField.getText();
+                String petName = nameField.getText();
+                Main.currentAnimal = new Animal(petName, petType);
                 frame.dispose();
-                if (petType.equals("cat")){
-                    PetHome.show("cat");
-                }
-                if (petType.equals("dog")){
-                    PetHome.show("dog");
-                }
-                if (petType.equals("rabbit")){
-                    PetHome.show("rabbit");
-                }
+                PetHome.show(petType);
             }
         });
 

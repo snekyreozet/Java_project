@@ -8,8 +8,14 @@ public class PetHome {
     private static boolean isSleeping = false;
     
     public static void show(String petType) {
-        Main.petType = petType; 
-        JFrame frame = new JFrame(Main.petname);
+        if (Main.currentAnimal == null) {
+            Main.currentAnimal = new Animal(Main.currentAnimal != null ? Main.currentAnimal.getName() : "", petType);
+        }
+        
+        Animal animal = Main.currentAnimal;
+        animal.setType(petType);
+        
+        JFrame frame = new JFrame(animal.getName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
         frame.getContentPane().setBackground(Main.LB);
@@ -29,27 +35,27 @@ public class PetHome {
         backgroundPanel.setLayout(null);
         backgroundPanel.setBounds(0, 0, 800, 600);
 
-        JLabel nameLabel = new JLabel(Main.petname, SwingConstants.LEFT);
+        JLabel nameLabel = new JLabel(animal.getName(), SwingConstants.LEFT);
         nameLabel.setBounds(550, 10, 300, 60);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 32));
         nameLabel.setForeground(new Color(0, 0, 0));
 
-        JLabel statusLabel = new JLabel(getOverallStatus(), SwingConstants.LEFT);
-        statusLabel.setBounds(20, 20, 350, 40); 
+        JLabel statusLabel = new JLabel(animal.getOverallStatus(), SwingConstants.LEFT);
+        statusLabel.setBounds(20, 20, 350, 40);
         statusLabel.setFont(new Font("Arial", Font.BOLD, 20));
         statusLabel.setForeground(new Color(0, 0, 0));
 
-        JLabel hungerLabel = new JLabel("Голод: " + Main.hunger, SwingConstants.RIGHT);
+        JLabel hungerLabel = new JLabel("Голод: " + animal.getHunger(), SwingConstants.RIGHT);
         hungerLabel.setBounds(460, 45, 250, 30);
         hungerLabel.setFont(new Font("Arial", Font.BOLD, 18));
         hungerLabel.setForeground(new Color(0, 0, 0));
 
-        JLabel playLabel = new JLabel("Игра: " + Main.play, SwingConstants.RIGHT);
+        JLabel playLabel = new JLabel("Игра: " + animal.getPlay(), SwingConstants.RIGHT);
         playLabel.setBounds(460, 75, 250, 30);
         playLabel.setFont(new Font("Arial", Font.BOLD, 18));
         playLabel.setForeground(new Color(0, 0, 0));
 
-        JLabel sleepLabel = new JLabel("Сон: " + Main.sleep, SwingConstants.RIGHT);
+        JLabel sleepLabel = new JLabel("Сон: " + animal.getSleep(), SwingConstants.RIGHT);
         sleepLabel.setBounds(460, 105, 250, 30);
         sleepLabel.setFont(new Font("Arial", Font.BOLD, 18));
         sleepLabel.setForeground(new Color(0, 0, 0));
@@ -57,7 +63,7 @@ public class PetHome {
         JButton feedButton = Main.Buttons.Button("Покормить", 190, 440, 120, 50);
         JButton playButton = Main.Buttons.Button("Играть", 340, 440, 120, 50);
         JButton sleepButton = Main.Buttons.Button("Спать", 490, 440, 120, 50);
-        JButton saveButton = Main.Buttons.Button("Сохранить", 20, 440, 120, 50); 
+        JButton saveButton = Main.Buttons.Button("Сохранить", 20, 440, 120, 50);
         JButton menuButton = Main.Buttons.Button("Меню", 325, 505, 150, 50);
 
         ImageIcon petIcon;
@@ -75,25 +81,14 @@ public class PetHome {
                 petIcon = new ImageIcon("src/cat.png");
         }
 
-        JButton petButton = Main.Buttons.ImgButton(petIcon, 210, 80, 400, 400);
+        JButton petButton = Main.Buttons.ImgButton(petIcon, animal.getPetX(), 80, 400, 400);
         
         Timer movementTimer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isSleeping) {
-                    if (Main.movingRight) {
-                        Main.petX += 2;
-                        if (Main.petX >= 60 + 120) {
-                            Main.movingRight = false;
-                        }
-                    } 
-                    else {
-                        Main.petX -= 2;
-                        if (Main.petX <= 60) {
-                            Main.movingRight = true;
-                        }
-                    }
-                    petButton.setBounds(Main.petX, 80, 400, 400);
+                    animal.movePet();
+                    petButton.setBounds(animal.getPetX(), 80, 400, 400);
                     petButton.repaint();
                 }
             }
@@ -103,20 +98,19 @@ public class PetHome {
         JButton[] buttons = {feedButton, playButton, sleepButton, saveButton, menuButton, petButton};
         
         feedButton.addActionListener(e -> {
-            if (!isSleeping && Main.hunger < 100) {
-                Main.hunger += 10;
-                if (Main.hunger > 100) Main.hunger = 100;
-                hungerLabel.setText("Голод: " + Main.hunger);
-                statusLabel.setText(getOverallStatus());
-            } else if (Main.hunger >= 100) {
+            if (!isSleeping && animal.getHunger() < 100) {
+                animal.increaseHunger(10);
+                hungerLabel.setText("Голод: " + animal.getHunger());
+                statusLabel.setText(animal.getOverallStatus());
+            } else if (animal.getHunger() >= 100) {
                 showTemporaryMessage(frame, "Ваш питомец не хочет есть");
             }
         });
 
         playButton.addActionListener(e -> {
-            if (!isSleeping && Main.play < 100) { 
-                if (Main.hungerTimer != null && Main.hungerTimer.isRunning()) {
-                    Main.hungerTimer.stop();
+            if (!isSleeping && animal.getPlay() < 100) {
+                if (animal.getHungerTimer() != null && animal.getHungerTimer().isRunning()) {
+                    animal.getHungerTimer().stop();
                 }
                 if (movementTimer != null && movementTimer.isRunning()) {
                     movementTimer.stop();
@@ -124,17 +118,16 @@ public class PetHome {
                 frame.setVisible(false);
                 MiniGame miniGame = new MiniGame(frame, petType);
                 miniGame.startGame();
-            } else if (Main.play >= 100) {
+            } else if (animal.getPlay() >= 100) {
                 showTemporaryMessage(frame, "Ваш питомец не хочет играть");
             }
         });
 
         sleepButton.addActionListener(e -> {
-            if (!isSleeping && Main.sleep < 100) { 
-                Main.sleep += 100;
-                if (Main.sleep > 100) Main.sleep = 100;
-                sleepLabel.setText("Сон: " + Main.sleep);
-                statusLabel.setText(getOverallStatus());
+            if (!isSleeping && animal.getSleep() < 100) {
+                animal.setSleep(100);
+                sleepLabel.setText("Сон: " + animal.getSleep());
+                statusLabel.setText(animal.getOverallStatus());
                 
                 showSleepOverlay(frame, petType);
                 disableButtons(buttons);
@@ -145,13 +138,13 @@ public class PetHome {
                 }
                 overlayTimer = new Timer(10000, ev -> {
                     hideSleepOverlay(frame);
-                    enableButtons(buttons); 
+                    enableButtons(buttons);
                     isSleeping = false;
                     overlayTimer.stop();
                 });
                 overlayTimer.setRepeats(false);
                 overlayTimer.start();
-            } else if (Main.sleep >= 100) {
+            } else if (animal.getSleep() >= 100) {
                 showTemporaryMessage(frame, "Ваш питомец не хочет спать");
             }
         });
@@ -159,12 +152,13 @@ public class PetHome {
         saveButton.addActionListener(e -> {
             if (!isSleeping) {
                 Main.saveCurrentPet();
+                showTemporaryMessage(frame, "Питомец сохранен!");
             }
         });
 
         menuButton.addActionListener(e -> {
-            if (!isSleeping) { 
-                Main.stopAllTimers();
+            if (!isSleeping) {
+                animal.stopAllTimers();
                 movementTimer.stop();
                 if (overlayTimer != null && overlayTimer.isRunning()) {
                     overlayTimer.stop();
@@ -173,44 +167,45 @@ public class PetHome {
                 Menu.show();
             }
         });
-        Main.hungerTimer = new Timer(10000, new ActionListener() {
+        
+        Timer hungerTimer = new Timer(10000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (Main.hunger > 0) {
-                    Main.hunger -= 5;
-                    if (Main.hunger < 0) Main.hunger = 0;
-                    hungerLabel.setText("Голод: " + Main.hunger);
-                    statusLabel.setText(getOverallStatus());
+                if (animal.getHunger() > 0) {
+                    animal.decreaseHunger(5);
+                    hungerLabel.setText("Голод: " + animal.getHunger());
+                    statusLabel.setText(animal.getOverallStatus());
                 }
             }
         });
-        Main.hungerTimer.start();
+        animal.setHungerTimer(hungerTimer);
+        animal.getHungerTimer().start();
 
-        Main.playTimer = new Timer(10000, new ActionListener() {
+        Timer playTimer = new Timer(10000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (Main.play > 0) {
-                    Main.play -= 5;
-                    if (Main.play < 0) Main.play = 0;
-                    playLabel.setText("Игра: " + Main.play);
-                    statusLabel.setText(getOverallStatus());
+                if (animal.getPlay() > 0) {
+                    animal.decreasePlay(5);
+                    playLabel.setText("Игра: " + animal.getPlay());
+                    statusLabel.setText(animal.getOverallStatus());
                 }
             }
         });
-        Main.playTimer.start();
+        animal.setPlayTimer(playTimer);
+        animal.getPlayTimer().start();
 
-        Main.sleepTimer = new Timer(15000, new ActionListener() {
+        Timer sleepTimer = new Timer(15000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (Main.sleep > 0) {
-                    Main.sleep -= 1;
-                    if (Main.sleep < 0) Main.sleep = 0;
-                    sleepLabel.setText("Сон: " + Main.sleep);
-                    statusLabel.setText(getOverallStatus());
+                if (animal.getSleep() > 0) {
+                    animal.decreaseSleep(1);
+                    sleepLabel.setText("Сон: " + animal.getSleep());
+                    statusLabel.setText(animal.getOverallStatus());
                 }
             }
         });
-        Main.sleepTimer.start();
+        animal.setSleepTimer(sleepTimer);
+        animal.getSleepTimer().start();
         
         frame.setContentPane(backgroundPanel);
         frame.getContentPane().add(nameLabel);
@@ -226,42 +221,7 @@ public class PetHome {
         frame.getContentPane().add(petButton);
 
         frame.setVisible(true);
-    }
-    private static String getOverallStatus() {
-        int lowCount = 0;
-        StringBuilder status = new StringBuilder();
-        if (Main.hunger <= 50) {
-            status.append("Голоден");
-            lowCount++;
-        }
-        
-        if (Main.play <= 50) {
-            if (lowCount > 0) {
-                status.append(" и хочет играть");
-            } else {
-                status.append("Хочет играть");
-            }
-            lowCount++;
-        }
-        
-        if (Main.sleep <= 50) {
-            if (lowCount > 0) {
-                status.append(" и хочет спать");
-            } else {
-                status.append("Хочет спать");
-            }
-            lowCount++;
-        }
-        if (lowCount >= 3) {
-            return "Питомец очень недоволен";
-        }
-        if (lowCount == 0) {
-            return "Доволен";
-        }
-        if (lowCount == 1) {
-            return status.toString();
-        }
-        return "Питомец " + status.toString();
+
     }
     private static void showTemporaryMessage(JFrame frame, String message) {
         JLabel messageLabel = new JLabel(message, SwingConstants.CENTER);

@@ -49,7 +49,9 @@ public class Menu {
         button4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Main.stopAllTimers();
+                if (Main.currentAnimal != null) {
+                    Main.currentAnimal.stopAllTimers();
+                }
                 System.exit(0);
             }
         });

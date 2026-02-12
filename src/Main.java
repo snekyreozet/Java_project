@@ -1,22 +1,12 @@
-import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
+import javax.swing.*;
+import java.awt.*;
 
 class Main {
     public static Color LB = new Color(210, 180, 140);
-    public static String petname = "";
-    public static String petType = "cat";
-    public static int hunger = 50;
-    public static int play = 50;
-    public static int sleep = 50;
-    public static Timer hungerTimer;
-    public static Timer playTimer;
-    public static Timer sleepTimer;
-    
-    public static int petX = 60; 
-    public static boolean movingRight = true;
+    public static Animal currentAnimal = null;
     private static final String SAVE_FILE = "pet_saves.txt";
     private static final List<PetSave> savedPets = new ArrayList<>();
     
@@ -26,13 +16,15 @@ class Main {
     }
     
     public static void saveCurrentPet() {
-        PetSave currentPet = new PetSave(petname, petType, hunger, play, sleep);
-        savedPets.add(currentPet);
-        
-        try (PrintWriter writer = new PrintWriter(new FileWriter(SAVE_FILE, true))) {
-            writer.println(petname + "|" + petType + "|" + hunger + "|" + play + "|" + sleep + "|" + currentPet.saveDate);
-        } catch (IOException e) {
-            e.getMessage();
+        if (currentAnimal != null) {
+            PetSave currentPet = currentAnimal.createSave();
+            savedPets.add(currentPet);
+            
+            try (PrintWriter writer = new PrintWriter(new FileWriter(SAVE_FILE, true))) {
+                writer.println(currentAnimal.getName() + "|" + currentAnimal.getType() + "|" + currentAnimal.getHunger() + "|" + currentAnimal.getPlay() + "|" + currentAnimal.getSleep() + "|" + currentPet.saveDate);
+            } catch (IOException e) {
+                e.getMessage();
+            }
         }
     }
     
@@ -67,27 +59,10 @@ class Main {
     public static boolean loadPet(int index) {
         if (index >= 0 && index < savedPets.size()) {
             PetSave pet = savedPets.get(index);
-            petname = pet.name;
-            petType = pet.type;
-            hunger = pet.hunger;
-            play = pet.play;
-            sleep = pet.sleep;
+            currentAnimal = new Animal(pet.name, pet.type, pet.hunger, pet.play, pet.sleep);
             return true;
         }
         return false;
-    }
-    
-    
-    public static void stopAllTimers() {
-        if (hungerTimer != null && hungerTimer.isRunning()) {
-            hungerTimer.stop();
-        }
-        if (playTimer != null && playTimer.isRunning()) {
-            playTimer.stop();
-        }
-        if (sleepTimer != null && sleepTimer.isRunning()) {
-            sleepTimer.stop();
-        }
     }
     
     public static class Buttons {
@@ -114,5 +89,4 @@ class Main {
             return button;
         }
     }
-
 }
