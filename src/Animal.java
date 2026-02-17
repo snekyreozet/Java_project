@@ -1,7 +1,7 @@
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import javax.swing.Timer;
+import java.time.LocalDateTime;
+import java.time.Duration;
 
 public class Animal implements Serializable {
     private String name;
@@ -16,12 +16,17 @@ public class Animal implements Serializable {
     private Timer playTimer;
     private Timer sleepTimer;
     
+    private LocalDateTime lastSaveTime; 
+    private LocalDateTime lastUpdateTime; 
+    
     public Animal(String name, String type) {
         this.name = name;
         this.type = type;
         this.hunger = 50;
         this.play = 50;
         this.sleep = 50;
+        this.lastSaveTime = LocalDateTime.now();
+        this.lastUpdateTime = LocalDateTime.now();
     }
     
     public Animal(String name, String type, int hunger, int play, int sleep) {
@@ -30,9 +35,49 @@ public class Animal implements Serializable {
         this.hunger = hunger;
         this.play = play;
         this.sleep = sleep;
+        this.lastSaveTime = LocalDateTime.now();
+        this.lastUpdateTime = LocalDateTime.now();
+    }
+    public void updateStatsByRealTime() {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(lastUpdateTime, now);
+        long hoursPassed = duration.toHours();
+        
+        if (hoursPassed > 0) {
+            System.out.println("Прошло часов: " + hoursPassed);
+            int hungerDecrease = (int)(hoursPassed * 15);
+            decreaseHunger(hungerDecrease);
+            int playDecrease = (int)((hoursPassed / 6) * 20);
+            decreasePlay(playDecrease);
+            int sleepDecrease = (int)((hoursPassed / 12) * 50);
+            decreaseSleep(sleepDecrease);
+            
+            System.out.println("Новые параметры - Голод: " + hunger + 
+                             ", Игра: " + play + ", Сон: " + sleep);
+        }
+        
+        lastUpdateTime = now;
+    }
+    public void checkAndUpdateOnLoad() {
+        updateStatsByRealTime();
     }
     
-    // Геттеры и сеттеры
+    public void autoSave() {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(lastSaveTime, now);
+        if (duration.toHours() >= 1) {
+            Main.saveCurrentPet();
+            lastSaveTime = now;
+            System.out.println("Автосохранение выполнено в " + now);
+        }
+    }
+    
+    public LocalDateTime getLastUpdateTime() { return lastUpdateTime; }
+    public void setLastUpdateTime(LocalDateTime time) { this.lastUpdateTime = time; }
+    
+    public LocalDateTime getLastSaveTime() { return lastSaveTime; }
+    public void setLastSaveTime(LocalDateTime time) { this.lastSaveTime = time; }
+    
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     
@@ -135,7 +180,7 @@ public class Animal implements Serializable {
     }
     
     public PetSave createSave() {
-        return new PetSave(name, type, hunger, play, sleep);
+        return new PetSave(name, type, hunger, play, sleep, lastUpdateTime, lastSaveTime);
     }
     
     @Override

@@ -6,14 +6,16 @@ public class PetHome {
     private static Timer overlayTimer;
     private static JLabel sleepOverlay;
     private static boolean isSleeping = false;
+    private static Timer gameAutoSaveTimer;
     
     public static void show(String petType) {
         if (Main.currentAnimal == null) {
-            Main.currentAnimal = new Animal(Main.currentAnimal != null ? Main.currentAnimal.getName() : "", petType);
+            Main.currentAnimal = new Animal("", petType);
         }
         
         Animal animal = Main.currentAnimal;
         animal.setType(petType);
+        animal.checkAndUpdateOnLoad();
         
         JFrame frame = new JFrame(animal.getName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -60,10 +62,9 @@ public class PetHome {
         sleepLabel.setFont(new Font("Arial", Font.BOLD, 18));
         sleepLabel.setForeground(new Color(0, 0, 0));
 
-        JButton feedButton = Main.Buttons.Button("Покормить", 190, 440, 120, 50);
-        JButton playButton = Main.Buttons.Button("Играть", 340, 440, 120, 50);
-        JButton sleepButton = Main.Buttons.Button("Спать", 490, 440, 120, 50);
-        JButton saveButton = Main.Buttons.Button("Сохранить", 20, 440, 120, 50);
+        JButton feedButton = Main.Buttons.Button("Покормить", 220, 440, 120, 50);
+        JButton playButton = Main.Buttons.Button("Играть", 370, 440, 120, 50);
+        JButton sleepButton = Main.Buttons.Button("Спать", 520, 440, 120, 50);
         JButton menuButton = Main.Buttons.Button("Меню", 325, 505, 150, 50);
 
         ImageIcon petIcon;
@@ -95,7 +96,7 @@ public class PetHome {
         });
         movementTimer.start();
 
-        JButton[] buttons = {feedButton, playButton, sleepButton, saveButton, menuButton, petButton};
+        JButton[] buttons = {feedButton, playButton, sleepButton, menuButton, petButton};
         
         feedButton.addActionListener(e -> {
             if (!isSleeping && animal.getHunger() < 100) {
@@ -114,6 +115,9 @@ public class PetHome {
                 }
                 if (movementTimer != null && movementTimer.isRunning()) {
                     movementTimer.stop();
+                }
+                if (gameAutoSaveTimer != null && gameAutoSaveTimer.isRunning()) {
+                    gameAutoSaveTimer.stop();
                 }
                 frame.setVisible(false);
                 MiniGame miniGame = new MiniGame(frame, petType);
@@ -148,13 +152,6 @@ public class PetHome {
                 showTemporaryMessage(frame, "Ваш питомец не хочет спать");
             }
         });
-        
-        saveButton.addActionListener(e -> {
-            if (!isSleeping) {
-                Main.saveCurrentPet();
-                showTemporaryMessage(frame, "Питомец сохранен!");
-            }
-        });
 
         menuButton.addActionListener(e -> {
             if (!isSleeping) {
@@ -163,15 +160,19 @@ public class PetHome {
                 if (overlayTimer != null && overlayTimer.isRunning()) {
                     overlayTimer.stop();
                 }
+                if (gameAutoSaveTimer != null && gameAutoSaveTimer.isRunning()) {
+                    gameAutoSaveTimer.stop();
+                }
+                Main.saveCurrentPet();
                 frame.dispose();
                 Menu.show();
             }
         });
-        
+
         Timer hungerTimer = new Timer(10000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (animal.getHunger() > 0) {
+                if (!isSleeping && animal.getHunger() > 0) {
                     animal.decreaseHunger(5);
                     hungerLabel.setText("Голод: " + animal.getHunger());
                     statusLabel.setText(animal.getOverallStatus());
@@ -184,7 +185,7 @@ public class PetHome {
         Timer playTimer = new Timer(10000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (animal.getPlay() > 0) {
+                if (!isSleeping && animal.getPlay() > 0) {
                     animal.decreasePlay(5);
                     playLabel.setText("Игра: " + animal.getPlay());
                     statusLabel.setText(animal.getOverallStatus());
@@ -197,7 +198,7 @@ public class PetHome {
         Timer sleepTimer = new Timer(15000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (animal.getSleep() > 0) {
+                if (!isSleeping && animal.getSleep() > 0) {
                     animal.decreaseSleep(1);
                     sleepLabel.setText("Сон: " + animal.getSleep());
                     statusLabel.setText(animal.getOverallStatus());
@@ -206,6 +207,29 @@ public class PetHome {
         });
         animal.setSleepTimer(sleepTimer);
         animal.getSleepTimer().start();
+        gameAutoSaveTimer = new Timer(60000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!isSleeping && Main.currentAnimal != null) {
+                    Main.currentAnimal.autoSave();
+                    System.out.println("Автосохранение проверено");
+                }
+            }
+        });
+        gameAutoSaveTimer.start();
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (Main.currentAnimal != null) {
+                    Main.saveCurrentPet();
+                }
+                animal.stopAllTimers();
+                movementTimer.stop();
+                if (gameAutoSaveTimer != null && gameAutoSaveTimer.isRunning()) {
+                    gameAutoSaveTimer.stop();
+                }
+            }
+        });
         
         frame.setContentPane(backgroundPanel);
         frame.getContentPane().add(nameLabel);
@@ -216,12 +240,10 @@ public class PetHome {
         frame.getContentPane().add(feedButton);
         frame.getContentPane().add(playButton);
         frame.getContentPane().add(sleepButton);
-        frame.getContentPane().add(saveButton);
         frame.getContentPane().add(menuButton);
         frame.getContentPane().add(petButton);
 
         frame.setVisible(true);
-
     }
     private static void showTemporaryMessage(JFrame frame, String message) {
         JLabel messageLabel = new JLabel(message, SwingConstants.CENTER);

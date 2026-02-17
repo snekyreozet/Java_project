@@ -3,25 +3,61 @@ import java.util.List;
 import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 class Main {
     public static Color LB = new Color(210, 180, 140);
     public static Animal currentAnimal = null;
+    
     private static final String SAVE_FILE = "pet_saves.txt";
     private static final List<PetSave> savedPets = new ArrayList<>();
+    private static Timer autoSaveTimer;
     
     public static void main(String[] args) {
         loadSavedPets();
         Menu.show();
+        startAutoSaveTimer();
+    }
+    
+    private static void startAutoSaveTimer() {
+        autoSaveTimer = new Timer(3600000, e -> {
+            if (currentAnimal != null) {
+                currentAnimal.autoSave();
+            }
+        });
+        autoSaveTimer.start();
     }
     
     public static void saveCurrentPet() {
         if (currentAnimal != null) {
             PetSave currentPet = currentAnimal.createSave();
-            savedPets.add(currentPet);
+            boolean found = false;
+            for (int i = 0; i < savedPets.size(); i++) {
+                PetSave pet = savedPets.get(i);
+                if (pet.name.equals(currentAnimal.getName()) && 
+                    pet.type.equals(currentAnimal.getType())) {
+                    savedPets.set(i, currentPet);
+                    found = true;
+                    break;
+                }
+            }
             
-            try (PrintWriter writer = new PrintWriter(new FileWriter(SAVE_FILE, true))) {
-                writer.println(currentAnimal.getName() + "|" + currentAnimal.getType() + "|" + currentAnimal.getHunger() + "|" + currentAnimal.getPlay() + "|" + currentAnimal.getSleep() + "|" + currentPet.saveDate);
+            if (!found) {
+                savedPets.add(currentPet);
+            }
+            
+            try (PrintWriter writer = new PrintWriter(new FileWriter(SAVE_FILE))) {
+                for (PetSave pet : savedPets) {
+                    writer.println(pet.name + "|" + 
+                                 pet.type + "|" + 
+                                 pet.hunger + "|" + 
+                                 pet.play + "|" + 
+                                 pet.sleep + "|" + 
+                                 pet.saveDate + "|" +
+                                 pet.lastUpdateTime + "|" +
+                                 pet.lastSaveTime);
+                }
             } catch (IOException e) {
                 e.getMessage();
             }
@@ -43,6 +79,13 @@ class Main {
                     String date = parts[5];
                     PetSave pet = new PetSave(name, type, hunger, play, sleep);
                     pet.saveDate = date;
+                    if (parts.length >= 7) {
+                        pet.lastUpdateTime = parts[6];
+                        if (parts.length >= 8) {
+                            pet.lastSaveTime = parts[7];
+                        }
+                    }
+                    
                     savedPets.add(pet);
                 }
             }
@@ -60,6 +103,19 @@ class Main {
         if (index >= 0 && index < savedPets.size()) {
             PetSave pet = savedPets.get(index);
             currentAnimal = new Animal(pet.name, pet.type, pet.hunger, pet.play, pet.sleep);
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+                if (pet.lastUpdateTime != null) {
+                    currentAnimal.setLastUpdateTime(LocalDateTime.parse(pet.lastUpdateTime, formatter));
+                }
+                if (pet.lastSaveTime != null) {
+                    currentAnimal.setLastSaveTime(LocalDateTime.parse(pet.lastSaveTime, formatter));
+                }
+            } catch (Exception e) {
+                System.out.println("Ошибка при восстановлении времени: " + e.getMessage());
+            }
+            currentAnimal.checkAndUpdateOnLoad();
+            
             return true;
         }
         return false;
