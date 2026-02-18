@@ -129,7 +129,7 @@ public class PetHome {
 
         sleepButton.addActionListener(e -> {
             if (!isSleeping && animal.getSleep() < 100) {
-                animal.setSleep(100);
+                animal.setSleep(animal.getSleep()+50);
                 sleepLabel.setText("Сон: " + animal.getSleep());
                 statusLabel.setText(animal.getOverallStatus());
                 
@@ -169,7 +169,7 @@ public class PetHome {
             }
         });
 
-        Timer hungerTimer = new Timer(10000, new ActionListener() {
+        Timer hungerTimer = new Timer(3600000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isSleeping && animal.getHunger() > 0) {
@@ -182,7 +182,7 @@ public class PetHome {
         animal.setHungerTimer(hungerTimer);
         animal.getHungerTimer().start();
 
-        Timer playTimer = new Timer(10000, new ActionListener() {
+        Timer playTimer = new Timer(3600000*6, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isSleeping && animal.getPlay() > 0) {
@@ -195,7 +195,7 @@ public class PetHome {
         animal.setPlayTimer(playTimer);
         animal.getPlayTimer().start();
 
-        Timer sleepTimer = new Timer(15000, new ActionListener() {
+        Timer sleepTimer = new Timer(3600000*12, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isSleeping && animal.getSleep() > 0) {

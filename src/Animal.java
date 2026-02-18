@@ -44,16 +44,12 @@ public class Animal implements Serializable {
         long hoursPassed = duration.toHours();
         
         if (hoursPassed > 0) {
-            System.out.println("Прошло часов: " + hoursPassed);
             int hungerDecrease = (int)(hoursPassed * 15);
             decreaseHunger(hungerDecrease);
             int playDecrease = (int)((hoursPassed / 6) * 20);
             decreasePlay(playDecrease);
             int sleepDecrease = (int)((hoursPassed / 12) * 50);
             decreaseSleep(sleepDecrease);
-            
-            System.out.println("Новые параметры - Голод: " + hunger + 
-                             ", Игра: " + play + ", Сон: " + sleep);
         }
         
         lastUpdateTime = now;
