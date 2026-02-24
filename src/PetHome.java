@@ -73,10 +73,10 @@ public class PetHome {
                 petIcon = new ImageIcon("src/cat.png");
                 break;
             case "dog":
-                petIcon = new ImageIcon("src/dog.png");
+                petIcon = new ImageIcon("src/dog.jpg");
                 break;
             case "rabbit":
-                petIcon = new ImageIcon("src/rabbit.png");
+                petIcon = new ImageIcon("src/rabbit.jpg");
                 break;
             default:
                 petIcon = new ImageIcon("src/cat.png");
@@ -99,14 +99,21 @@ public class PetHome {
         JButton[] buttons = {feedButton, playButton, sleepButton, menuButton, petButton};
         
         feedButton.addActionListener(e -> {
-            if (!isSleeping && animal.getHunger() < 100) {
-                animal.increaseHunger(10);
-                hungerLabel.setText("Голод: " + animal.getHunger());
-                statusLabel.setText(animal.getOverallStatus());
-            } else if (animal.getHunger() >= 100) {
-                showTemporaryMessage(frame, "Ваш питомец не хочет есть");
-            }
-        });
+    if (!isSleeping) {
+        if (animal.getHungerTimer() != null && animal.getHungerTimer().isRunning()) {
+            animal.getHungerTimer().stop();
+        }
+        if (movementTimer != null && movementTimer.isRunning()) {
+            movementTimer.stop();
+        }
+        if (gameAutoSaveTimer != null && gameAutoSaveTimer.isRunning()) {
+            gameAutoSaveTimer.stop();
+        }
+        Main.saveCurrentPet();
+        frame.dispose();
+        Kitchen.show(petType);
+    }
+});
 
         playButton.addActionListener(e -> {
             if (!isSleeping && animal.getPlay() < 100) {
@@ -276,7 +283,7 @@ public class PetHome {
                 sleepIcon = new ImageIcon("src/sleepdog.png");
                 break;
             case "rabbit":
-                sleepIcon = new ImageIcon("src/sleeprabbit.png");
+                sleepIcon = new ImageIcon("src/sleeprabbit.jpg");
                 break;
             default:
                 sleepIcon = new ImageIcon("src/sleepcat.png");
