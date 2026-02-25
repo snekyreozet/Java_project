@@ -17,8 +17,8 @@ public class YourPet {
         Label.setForeground(new Color(101, 67, 33));
 
         JButton catButton = Main.Buttons.ImgButton(new ImageIcon("src/cat.png"), 100, 130, 250, 250);
-        JButton dogButton = Main.Buttons.ImgButton(new ImageIcon("src/dog.jpg"), 325, 130, 250, 250);
-        JButton rabbitButton = Main.Buttons.ImgButton(new ImageIcon("src/rabbit.jpg"), 550, 130, 250, 250);
+        JButton dogButton = Main.Buttons.ImgButton(new ImageIcon("src/dog.png"), 280, 130, 250, 250);
+        JButton rabbitButton = Main.Buttons.ImgButton(new ImageIcon("src/rabbit.png"), 500, 130, 250, 250);
 
         JLabel catLabel = new JLabel("Кот", SwingConstants.CENTER);
         catLabel.setBounds(100, 380, 150, 30);

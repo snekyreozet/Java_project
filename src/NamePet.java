@@ -22,10 +22,10 @@ public class NamePet {
                 petIcon = new ImageIcon("src/cat.png");
                 break;
             case "dog":
-                petIcon = new ImageIcon("src/dog.jpg");
+                petIcon = new ImageIcon("src/dog.png");
                 break;
             case "rabbit":
-                petIcon = new ImageIcon("src/rabbit.jpg");
+                petIcon = new ImageIcon("src/rabbit.png");
                 break;
             default:
                 petIcon = new ImageIcon("src/cat.png");
