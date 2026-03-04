@@ -17,8 +17,8 @@ class MiniGame {
     private boolean gamePaused = false;
     private Timer gameTimer;
     private Random random = new Random();
-    private final int PLATFORM_SPEED = 20;
-    private final int BALL_SPEED = 7;
+    private final int PLATFORM_SPEED = 30;
+    private final int BALL_SPEED = 15;
     private JLabel scoreLabel;
     private JLabel messageLabel;
     private JPanel gamePanel; 

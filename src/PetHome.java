@@ -7,6 +7,7 @@ public class PetHome {
     private static JLabel sleepOverlay;
     private static boolean isSleeping = false;
     private static Timer gameAutoSaveTimer;
+    private static Timer movementTimer;
     
     public static void show(String petType) {
         if (Main.currentAnimal == null) {
@@ -16,6 +17,11 @@ public class PetHome {
         Animal animal = Main.currentAnimal;
         animal.setType(petType);
         animal.checkAndUpdateOnLoad();
+        
+        if (animal.getHunger() == 0 && animal.getPlay() == 0 && animal.getSleep() == 0) {
+            GoodbyeWindow.show(animal.getName());
+            return;
+        }
         
         JFrame frame = new JFrame(animal.getName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -84,7 +90,7 @@ public class PetHome {
 
         JButton petButton = Main.Buttons.ImgButton(petIcon, animal.getPetX(), 80, 400, 400);
         
-        Timer movementTimer = new Timer(50, new ActionListener() {
+        movementTimer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isSleeping) {
@@ -99,21 +105,21 @@ public class PetHome {
         JButton[] buttons = {feedButton, playButton, sleepButton, menuButton, petButton};
         
         feedButton.addActionListener(e -> {
-    if (!isSleeping) {
-        if (animal.getHungerTimer() != null && animal.getHungerTimer().isRunning()) {
-            animal.getHungerTimer().stop();
-        }
-        if (movementTimer != null && movementTimer.isRunning()) {
-            movementTimer.stop();
-        }
-        if (gameAutoSaveTimer != null && gameAutoSaveTimer.isRunning()) {
-            gameAutoSaveTimer.stop();
-        }
-        Main.saveCurrentPet();
-        frame.dispose();
-        Kitchen.show(petType);
-    }
-});
+            if (!isSleeping) {
+                if (animal.getHungerTimer() != null && animal.getHungerTimer().isRunning()) {
+                    animal.getHungerTimer().stop();
+                }
+                if (movementTimer != null && movementTimer.isRunning()) {
+                    movementTimer.stop();
+                }
+                if (gameAutoSaveTimer != null && gameAutoSaveTimer.isRunning()) {
+                    gameAutoSaveTimer.stop();
+                }
+                Main.saveCurrentPet();
+                frame.dispose();
+                Kitchen.show(petType);
+            }
+        });
 
         playButton.addActionListener(e -> {
             if (!isSleeping && animal.getPlay() < 100) {
@@ -180,35 +186,36 @@ public class PetHome {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isSleeping && animal.getHunger() > 0) {
-                    animal.decreaseHunger(5);
+                    animal.decreaseHunger(15);
                     hungerLabel.setText("Голод: " + animal.getHunger());
                     statusLabel.setText(animal.getOverallStatus());
+                    checkIfPetDied(frame, animal);
                 }
             }
         });
         animal.setHungerTimer(hungerTimer);
         animal.getHungerTimer().start();
-
         Timer playTimer = new Timer(3600000*6, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isSleeping && animal.getPlay() > 0) {
-                    animal.decreasePlay(5);
+                    animal.decreasePlay(20);
                     playLabel.setText("Игра: " + animal.getPlay());
                     statusLabel.setText(animal.getOverallStatus());
+                    checkIfPetDied(frame, animal);
                 }
             }
         });
         animal.setPlayTimer(playTimer);
         animal.getPlayTimer().start();
-
         Timer sleepTimer = new Timer(3600000*12, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isSleeping && animal.getSleep() > 0) {
-                    animal.decreaseSleep(1);
+                    animal.decreaseSleep(50);
                     sleepLabel.setText("Сон: " + animal.getSleep());
                     statusLabel.setText(animal.getOverallStatus());
+                    checkIfPetDied(frame, animal);
                 }
             }
         });
@@ -252,6 +259,25 @@ public class PetHome {
 
         frame.setVisible(true);
     }
+    
+    private static void checkIfPetDied(JFrame frame, Animal animal) {
+        if (animal.getHunger() == 0 && animal.getPlay() == 0 && animal.getSleep() == 0) {
+            animal.stopAllTimers();
+            if (movementTimer != null && movementTimer.isRunning()) {
+                movementTimer.stop();
+            }
+            if (gameAutoSaveTimer != null && gameAutoSaveTimer.isRunning()) {
+                gameAutoSaveTimer.stop();
+            }
+            if (overlayTimer != null && overlayTimer.isRunning()) {
+                overlayTimer.stop();
+            }
+            
+            frame.dispose();
+            GoodbyeWindow.show(animal.getName());
+        }
+    }
+    
     private static void showTemporaryMessage(JFrame frame, String message) {
         JLabel messageLabel = new JLabel(message, SwingConstants.CENTER);
         messageLabel.setBounds(200, 200, 400, 50);
