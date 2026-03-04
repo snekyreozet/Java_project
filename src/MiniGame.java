@@ -78,8 +78,12 @@ class MiniGame {
         messageLabel = new JLabel("Поймайте 10 мячей! Управление: A и D, Пауза: P");
         messageLabel.setBounds(150, 45, 600, 40);
         messageLabel.setFont(new Font("Arial", Font.PLAIN, 22));
-        messageLabel.setForeground(Color.BLACK);
-        
+        if (Main.LB.equals(new Color(210, 180, 140))) {
+            messageLabel.setForeground(Color.BLACK);
+        }
+        else{
+            messageLabel.setForeground(new Color(210, 180, 140));
+        }
         JLabel instructionLabel = new JLabel("← A / D → для движения | P - пауза");
         instructionLabel.setBounds(200, 600 - 100, 400, 30);
         instructionLabel.setFont(new Font("Arial", Font.BOLD, 20));
