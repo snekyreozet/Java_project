@@ -11,7 +11,7 @@ public class YourPet {
         frame.setLayout(null);
         frame.getContentPane().setBackground(Main.LB);
 
-        JLabel Label = new JLabel("Your pet", SwingConstants.CENTER);
+        JLabel Label = new JLabel("Выберите питомца", SwingConstants.CENTER);
         Label.setBounds(0, 30, 800, 100);
         Label.setFont(new Font("Arial", Font.BOLD, 72));
         Label.setForeground(new Color(101, 67, 33));

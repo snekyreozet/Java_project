@@ -11,7 +11,7 @@ public class Settings {
         frame.setLayout(null);
         frame.getContentPane().setBackground(Main.LB);
 
-        JLabel Label = new JLabel("Settings", SwingConstants.CENTER);
+        JLabel Label = new JLabel("Настройки", SwingConstants.CENTER);
         Label.setBounds(0, 100, 800, 100);
         Label.setFont(new Font("Arial", Font.BOLD, 72));
         Label.setForeground(new Color(101, 67, 33));

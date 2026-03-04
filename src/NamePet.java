@@ -11,7 +11,7 @@ public class NamePet {
         frame.setLocationRelativeTo(null);
         frame.setLayout(null);
 
-        JLabel Label = new JLabel("Name your pet!", SwingConstants.CENTER);
+        JLabel Label = new JLabel("Дайте имя питомцу!", SwingConstants.CENTER);
         Label.setBounds(0, 30, 800, 100);
         Label.setFont(new Font("Arial", Font.BOLD, 72));
         Label.setForeground(new Color(101, 67, 33));
@@ -38,7 +38,7 @@ public class NamePet {
         nameField.setFont(new Font("Arial", Font.PLAIN, 16));
         nameField.setHorizontalAlignment(JTextField.CENTER);
         
-        JButton nextButton = Main.Buttons.Button("Next", 350, 520, 100, 30);
+        JButton nextButton = Main.Buttons.Button("Далее", 350, 520, 100, 30);
 
         nextButton.addActionListener(new ActionListener() {
             @Override

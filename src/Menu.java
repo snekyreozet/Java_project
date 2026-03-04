@@ -17,10 +17,10 @@ public class Menu {
         Label.setFont(new Font("Arial", Font.BOLD, 72));
         Label.setForeground(new Color(101, 67, 33)); 
 
-        JButton button1 = Main.Buttons.Button("Start", 330, 250, 140, 40);
-        JButton button2 = Main.Buttons.Button("Prev pets", 330, 300, 140, 40);
-        JButton button3 = Main.Buttons.Button("Settings", 330, 350, 140, 40);
-        JButton button4 = Main.Buttons.Button("Exit", 330, 400, 140, 40);
+        JButton button1 = Main.Buttons.Button("Старт", 330, 250, 140, 40);
+        JButton button2 = Main.Buttons.Button("Питомцы", 330, 300, 140, 40);
+        JButton button3 = Main.Buttons.Button("Настройки", 330, 350, 140, 40);
+        JButton button4 = Main.Buttons.Button("Выход", 330, 400, 140, 40);
 
         button1.addActionListener(new ActionListener() {
             @Override

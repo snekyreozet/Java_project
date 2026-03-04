@@ -32,7 +32,7 @@ class MiniGame {
     }
     
     public void startGame() {
-        gameFrame = new JFrame("Catch the Ball!");
+        gameFrame = new JFrame("Поймайте мячик!");
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setSize(800, 600);
         gameFrame.setLocationRelativeTo(null);
