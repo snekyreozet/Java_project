@@ -16,7 +16,7 @@ public class YourPet {
         Label.setFont(new Font("Arial", Font.BOLD, 72));
         Label.setForeground(new Color(101, 67, 33));
 
-        JButton catButton = Main.Buttons.ImgButton(new ImageIcon("src/cat.png"), 100, 130, 250, 250);
+        JButton catButton = Main.Buttons.ImgButton(new ImageIcon("src/cat.png"), 0, 130, 250, 250);
         JButton dogButton = Main.Buttons.ImgButton(new ImageIcon("src/dog.png"), 280, 130, 250, 250);
         JButton rabbitButton = Main.Buttons.ImgButton(new ImageIcon("src/rabbit.png"), 500, 130, 250, 250);
 

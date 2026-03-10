@@ -164,12 +164,12 @@ public class Animal implements Serializable {
     public void movePet() {
         if (movingRight) {
             petX += 2;
-            if (petX >= 60 + 120) {
+            if (petX >= 300) {
                 movingRight = false;
             }
         } else {
             petX -= 2;
-            if (petX <= 60) {
+            if (petX <= 100) {
                 movingRight = true;
             }
         }
