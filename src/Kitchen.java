@@ -37,7 +37,7 @@ public class Kitchen {
         nameLabel.setForeground(new Color(0, 0, 0));
 
         JLabel statusLabel = new JLabel(animal.getOverallStatus(), SwingConstants.LEFT);
-        statusLabel.setBounds(20, 20, 350, 40);
+        statusLabel.setBounds(20, 20, 400, 40);
         statusLabel.setFont(new Font("Arial", Font.BOLD, 20));
         statusLabel.setForeground(new Color(0, 0, 0));
 
