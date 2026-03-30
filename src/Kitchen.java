@@ -12,9 +12,24 @@ public class Kitchen {
         JFrame frame = new JFrame("Кухня - " + animal.getName());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
-        frame.getContentPane().setBackground(Main.LB);
         frame.setLocationRelativeTo(null);
         frame.setLayout(null);
+
+        JPanel backgroundPanel = new JPanel() {
+            private Image backgroundImage = new ImageIcon("src/Kitchen_bg.png").getImage();
+            @Override
+            public void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (backgroundImage != null) {
+                    g.drawImage(backgroundImage, 0, 0, 800, 600, this);
+                } else {
+                    g.setColor(Main.LB);
+                    g.fillRect(0, 0, 800, 600);
+                }
+            }
+        };
+        backgroundPanel.setLayout(null);
+        backgroundPanel.setBounds(0, 0, 800, 600);
 
         JLabel nameLabel = new JLabel(animal.getName(), SwingConstants.LEFT);
         nameLabel.setBounds(550, 10, 300, 60);
@@ -31,10 +46,10 @@ public class Kitchen {
         hungerLabel.setFont(new Font("Arial", Font.BOLD, 18));
         hungerLabel.setForeground(new Color(0, 0, 0));
 
-        JButton fishButton = Main.Buttons.Button("Рыба", 150, 440, 120, 50);
-        JButton meatButton = Main.Buttons.Button("Мясо", 300, 440, 120, 50);
-        JButton carrotButton = Main.Buttons.Button("Морковь", 450, 440, 120, 50);
-        JButton homeButton = Main.Buttons.Button("Домой", 340, 505, 120, 50);
+        JButton fishButton = Main.Buttons.Button("Рыба", 200, 440, 120, 50);
+        JButton meatButton = Main.Buttons.Button("Мясо", 350, 440, 120, 50);
+        JButton carrotButton = Main.Buttons.Button("Морковь", 500, 440, 120, 50);
+        JButton homeButton = Main.Buttons.Button("Домой", 350, 505, 120, 50);
 
         ImageIcon petIcon;
         switch(petType) {
@@ -133,14 +148,15 @@ public class Kitchen {
             }
         });
 
-        frame.getContentPane().add(nameLabel);
-        frame.getContentPane().add(statusLabel);
-        frame.getContentPane().add(hungerLabel);
-        frame.getContentPane().add(fishButton);
-        frame.getContentPane().add(meatButton);
-        frame.getContentPane().add(carrotButton);
-        frame.getContentPane().add(homeButton);
-        frame.getContentPane().add(petLabel);
+        frame.setContentPane(backgroundPanel);
+        backgroundPanel.add(nameLabel);
+        backgroundPanel.add(statusLabel);
+        backgroundPanel.add(hungerLabel);
+        backgroundPanel.add(fishButton);
+        backgroundPanel.add(meatButton);
+        backgroundPanel.add(carrotButton);
+        backgroundPanel.add(homeButton);
+        backgroundPanel.add(petLabel);
 
         frame.setVisible(true);
     }

@@ -49,7 +49,7 @@ public class PetHome {
         nameLabel.setForeground(new Color(0, 0, 0));
 
         JLabel statusLabel = new JLabel(animal.getOverallStatus(), SwingConstants.LEFT);
-        statusLabel.setBounds(20, 20, 350, 40);
+        statusLabel.setBounds(20, 20, 400, 40);
         statusLabel.setFont(new Font("Arial", Font.BOLD, 20));
         statusLabel.setForeground(new Color(0, 0, 0));
 
@@ -68,10 +68,10 @@ public class PetHome {
         sleepLabel.setFont(new Font("Arial", Font.BOLD, 18));
         sleepLabel.setForeground(new Color(0, 0, 0));
 
-        JButton feedButton = Main.Buttons.Button("Покормить", 220, 440, 120, 50);
-        JButton playButton = Main.Buttons.Button("Играть", 370, 440, 120, 50);
-        JButton sleepButton = Main.Buttons.Button("Спать", 520, 440, 120, 50);
-        JButton menuButton = Main.Buttons.Button("Меню", 325, 505, 150, 50);
+        JButton feedButton = Main.Buttons.Button("Покормить", 200, 440, 120, 50);
+        JButton playButton = Main.Buttons.Button("Играть", 350, 440, 120, 50);
+        JButton sleepButton = Main.Buttons.Button("Спать", 500, 440, 120, 50);
+        JButton menuButton = Main.Buttons.Button("Меню", 350, 505, 120, 50);
 
         ImageIcon petIcon;
         switch(petType) {
