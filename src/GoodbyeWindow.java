@@ -39,14 +39,7 @@ public class GoodbyeWindow {
         letterText.setLineWrap(true);
         letterText.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JButton feedButton = new JButton("Положить еду");
-        feedButton.setBounds(300, 470, 200, 50);
-        feedButton.setBackground(new Color(101, 67, 33));
-        feedButton.setForeground(Color.WHITE);
-        feedButton.setFont(new Font("Arial", Font.BOLD, 18));
-        feedButton.setFocusPainted(false);
-        feedButton.setBorderPainted(false);
-        feedButton.setOpaque(true);
+        JButton feedButton = Main.Buttons.Button("Положить еду", 300, 470, 200, 50);
 
         feedButton.addActionListener(new ActionListener() {
             @Override
@@ -55,7 +48,7 @@ public class GoodbyeWindow {
                     Main.currentAnimal.setHunger(100);
                     Main.saveCurrentPet();
                 }
-                
+
                 frame.dispose();
                 if (Main.currentAnimal != null) {
                     PetHome.show(Main.currentAnimal.getType());

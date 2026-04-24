@@ -3,13 +3,12 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class Kitchen {
-    private static JLabel eatOverlay;
     private static boolean isEating = false;
     
     public static void show(String petType) {
         Animal animal = Main.currentAnimal;
         
-        JFrame frame = new JFrame("Кухня - " + animal.getName());
+        JFrame frame = new JFrame("Кухня");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
@@ -211,8 +210,6 @@ public class Kitchen {
         frame.getContentPane().setComponentZOrder(eatPanel, 0);
         frame.getContentPane().repaint();
         
-        eatOverlay = new JLabel();
-        eatOverlay.setIcon(new ImageIcon("src/eating.png"));
     }
 
     private static void hideEatingOverlay(JFrame frame) {
